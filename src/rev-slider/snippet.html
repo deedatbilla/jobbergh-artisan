@@ -1,0 +1,38 @@
+<div className="col-md-4 form-group input-group-sm">
+<label htmlFor="Template type" className="form-check-label">
+  Do you have a professional qualification for your profession?
+</label>
+<div className="row">
+  <div class=" col-md-6 form-check">
+    <label class=" form-check-label" for="radio1">
+      <input
+        type="radio"
+        class="form-check-input"
+        name="professional_qualification"
+        value={true}
+        onChange={this.onChange}
+      />
+      Yes
+    </label>
+  </div>
+  <div class=" col-md-6 form-check">
+    <label class="form-check-label" for="radio2">
+      <input
+        type="radio"
+        class="form-check-input"
+        name="professional_qualification"
+        value={false}
+        onChange={this.onChange}
+      />
+      No
+    </label>
+  </div>
+</div>
+</div>
+
+<input type="radio" id="male" name="gender" value="male">
+<label for="male">Male</label><br>
+<input type="radio" id="female" name="gender" value="female">
+<label for="female">Female</label><br>
+<input type="radio" id="other" name="gender" value="other">
+<label for="other">Other</label>
