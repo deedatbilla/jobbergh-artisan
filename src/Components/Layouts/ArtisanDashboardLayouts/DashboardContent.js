@@ -122,7 +122,7 @@ class DashboardContent extends Component {
                           if (data.status === "complete") {
                             count++;
                           }
-                          return count;
+                          return count||0;
                         })}
                       </h3>
                       <p>Services completed</p>
@@ -137,7 +137,7 @@ class DashboardContent extends Component {
                   {/* <!-- small box --> */}
                   <div className="small-box bg-success">
                     <div className="inner">
-                      <h3>{sum}/5</h3>
+                      <h3>{sum||0}/5</h3>
 
                       <p>Overall rating</p>
                     </div>
@@ -174,7 +174,7 @@ class DashboardContent extends Component {
                   {/* <!-- small box --> */}
                   <div className="small-box bg-warning">
                     <div className="inner">
-                      <h3>{requests.length}</h3>
+                      <h3>{requests.length||0}</h3>
 
                       <p>Total Customers</p>
                     </div>

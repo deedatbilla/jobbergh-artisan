@@ -71,142 +71,150 @@ class RequestedServices extends Component {
                               </tr>
                             </thead>
                             <tbody>
-                              {this.props.requests.map((data) => (
-                                <tr key={data.id}>
-                                  <td>{data.id}</td>
-                                  <td>{data.location}</td>
-                                  <td>
-                                    <span
-                                      className={
-                                        data.status === "pending"
-                                          ? "badge badge-warning"
-                                          : data.status === "cancelled"
-                                          ? "badge badge-danger"
-                                          : data.status === "approved"
-                                          ? "badge badge-primary"
-                                          : data.status === "complete"
-                                          ? "badge badge-success"
-                                          : null
-                                      }
-                                    >
-                                      {data.status}
-                                    </span>
-                                  </td>
-                                  <td>{data.type_of_skill}</td>
-                                  <td>{new Date(data.datecreated.seconds).toString()}</td>
-                                  <td>
-                                    <span>
-                                      <button
-                                        className="btn btn-primary btn-sm"
-                                        onClick={async () => {
-                                          const { firestore } = this.props;
-                                          confirmAlert({
-                                            title: "Approve request",
-                                            message: `You are about to approve request for a ${data.type_of_skill} service  .`,
-                                            buttons: [
-                                              {
-                                                label: "Confirm",
-                                                onClick: async () => {
-                                                  try {
-                                                    await firestore.update(
-                                                      { collection: "ArtisanRequests", doc: data.id },
-                                                      { status: "approved" }
-                                                    );
-                                                  } catch (error) {
-                                                    console.log(error.message);
-                                                  }
-                                                },
-                                              },
-                                              {
-                                                label: "Cancel",
-                                                onClick: () => null,
-                                              },
-                                            ],
-                                          });
-                                          //   await firestore.u
-                                        }}
-                                      >
-                                        Approve
-                                      </button>
-                                    </span>
-                                  </td>
-                                  <td>
-                                    <span>
-                                      <button
-                                        className="btn btn-danger btn-sm"
-                                        onClick={async () => {
-                                          const { firestore } = this.props;
-                                          confirmAlert({
-                                            title: "Cancel request",
-                                            message: "Are you sure to cancel this request?.",
-                                            buttons: [
-                                              {
-                                                label: "Yes",
-                                                onClick: async () => {
-                                                  try {
-                                                    await firestore.update(
-                                                      { collection: "ArtisanRequests", doc: data.id },
-                                                      { status: "cancelled" }
-                                                    );
-                                                  } catch (error) {
-                                                    console.log(error.message);
-                                                  }
-                                                },
-                                              },
-                                              {
-                                                label: "No",
-                                                onClick: () => null,
-                                              },
-                                            ],
-                                          });
-                                          //   await firestore.u
-                                        }}
-                                      >
-                                        Cancel
-                                      </button>
-                                    </span>
-                                  </td>
-
-                                  {data.status === "approved" ? (
-                                    <td>
-                                      <span>
-                                        <button
-                                          className="btn btn-success btn-sm"
-                                          onClick={async () => {
-                                            const { firestore } = this.props;
-                                            confirmAlert({
-                                              title: "Confirm service completion",
-                                              message: "Have you completed this service?.",
-                                              buttons: [
-                                                {
-                                                  label: "Confirm",
-                                                  onClick: async () => {
-                                                    try {
-                                                      await firestore.update(
-                                                        { collection: "ArtisanRequests", doc: data.id },
-                                                        { status: "complete" }
-                                                      );
-                                                    } catch (error) {
-                                                      console.log(error.message);
-                                                    }
-                                                  },
-                                                },
-                                                {
-                                                  label: "Cancel",
-                                                  onClick: () => null,
-                                                },
-                                              ],
-                                            });
-                                            //   await firestore.u
-                                          }}
+                              {this.props.requests.length > 0 ? (
+                                <React.Fragment>
+                                  {this.props.requests.map((data) => (
+                                    <tr key={data.id}>
+                                      <td>{data.id}</td>
+                                      <td>{data.location}</td>
+                                      <td>
+                                        <span
+                                          className={
+                                            data.status === "pending"
+                                              ? "badge badge-warning"
+                                              : data.status === "cancelled"
+                                              ? "badge badge-danger"
+                                              : data.status === "approved"
+                                              ? "badge badge-primary"
+                                              : data.status === "complete"
+                                              ? "badge badge-success"
+                                              : null
+                                          }
                                         >
-                                          Complete
-                                        </button>
-                                      </span>
-                                    </td>
-                                  ) : null}
+                                          {data.status}
+                                        </span>
+                                      </td>
+                                      <td>{data.type_of_skill}</td>
+                                      <td>{new Date(data.datecreated.seconds).toString()}</td>
+                                      <td>
+                                        <span>
+                                          <button
+                                            className="btn btn-primary btn-sm"
+                                            onClick={async () => {
+                                              const { firestore } = this.props;
+                                              confirmAlert({
+                                                title: "Approve request",
+                                                message: `You are about to approve request for a ${data.type_of_skill} service  .`,
+                                                buttons: [
+                                                  {
+                                                    label: "Confirm",
+                                                    onClick: async () => {
+                                                      try {
+                                                        await firestore.update(
+                                                          { collection: "ArtisanRequests", doc: data.id },
+                                                          { status: "approved" }
+                                                        );
+                                                      } catch (error) {
+                                                        console.log(error.message);
+                                                      }
+                                                    },
+                                                  },
+                                                  {
+                                                    label: "Cancel",
+                                                    onClick: () => null,
+                                                  },
+                                                ],
+                                              });
+                                              //   await firestore.u
+                                            }}
+                                          >
+                                            Approve
+                                          </button>
+                                        </span>
+                                      </td>
+                                      <td>
+                                        <span>
+                                          <button
+                                            className="btn btn-danger btn-sm"
+                                            onClick={async () => {
+                                              const { firestore } = this.props;
+                                              confirmAlert({
+                                                title: "Cancel request",
+                                                message: "Are you sure to cancel this request?.",
+                                                buttons: [
+                                                  {
+                                                    label: "Yes",
+                                                    onClick: async () => {
+                                                      try {
+                                                        await firestore.update(
+                                                          { collection: "ArtisanRequests", doc: data.id },
+                                                          { status: "cancelled" }
+                                                        );
+                                                      } catch (error) {
+                                                        console.log(error.message);
+                                                      }
+                                                    },
+                                                  },
+                                                  {
+                                                    label: "No",
+                                                    onClick: () => null,
+                                                  },
+                                                ],
+                                              });
+                                              //   await firestore.u
+                                            }}
+                                          >
+                                            Cancel
+                                          </button>
+                                        </span>
+                                      </td>
+
+                                      {data.status === "approved" ? (
+                                        <td>
+                                          <span>
+                                            <button
+                                              className="btn btn-success btn-sm"
+                                              onClick={async () => {
+                                                const { firestore } = this.props;
+                                                confirmAlert({
+                                                  title: "Confirm service completion",
+                                                  message: "Have you completed this service?.",
+                                                  buttons: [
+                                                    {
+                                                      label: "Confirm",
+                                                      onClick: async () => {
+                                                        try {
+                                                          await firestore.update(
+                                                            { collection: "ArtisanRequests", doc: data.id },
+                                                            { status: "complete" }
+                                                          );
+                                                        } catch (error) {
+                                                          console.log(error.message);
+                                                        }
+                                                      },
+                                                    },
+                                                    {
+                                                      label: "Cancel",
+                                                      onClick: () => null,
+                                                    },
+                                                  ],
+                                                });
+                                                //   await firestore.u
+                                              }}
+                                            >
+                                              Complete
+                                            </button>
+                                          </span>
+                                        </td>
+                                      ) : null}
+                                    </tr>
+                                  ))}
+                                </React.Fragment>
+                              ) : (
+                                <tr>
+                                  <td colSpan="6" className="text-center">No items</td>
                                 </tr>
-                              ))}
+                              )}
                               {/* <tr>
                                 <td>
                                   <a href="pages/examples/invoice.html">OR9842</a>

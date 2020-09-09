@@ -28,6 +28,13 @@ class DashboardSideBar extends Component {
     const { firebase } = this.props;
     firebase.logout();
   };
+  async componentDidMount(){
+    const IdTokenResult=await this.props.firebase.auth().currentUser.getIdTokenResult()
+    // console.log(IdTokenResult.claims)
+     if(!IdTokenResult.claims.isArtisan){
+       this.props.history.push("/not-authorized")
+     }
+   }
   render() {
     const { isAuthenticated } = this.state;
     const { auth } = this.props;

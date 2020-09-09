@@ -7,9 +7,9 @@ import Dropzone from "react-dropzone";
 const fileMetadata = { contentType: "image/jpeg" };
 // Path within Database for metadata (also used for file Storage path)
 const filesPath = "uploadedFiles";
-const storagePath = "workplace";
+const storagePath = "sample_works";
 const dbPath = "artisan";
-export default function Uploader({ uploadedFiles, onFileDelete, firebase, firestore, artisan }) {
+export default function SampleWorksDropzone({ uploadedFiles, onFileDelete, firebase, firestore, artisan }) {
   //   const firebase = useFirebase()
   const [imgURLs, seturls] = useState([]);
   useEffect(() => {
@@ -32,11 +32,9 @@ export default function Uploader({ uploadedFiles, onFileDelete, firebase, firest
       .uploadFiles(
         `artisans/${firebase.auth().currentUser.uid}/${storagePath}`,
         files,
-        `artisan/${firebase.auth().currentUser.uid}/workplace`
+        `artisan/${firebase.auth().currentUser.uid}/sample_works`
       )
       .then((data) => {
-       
-
         setLoading(false);
       });
   };

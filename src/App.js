@@ -21,8 +21,6 @@ import "admin-lte/dist/css/adminlte.min.css";
 import "admin-lte/plugins/summernote/summernote-bs4.min.css";
 import "admin-lte/plugins/daterangepicker/daterangepicker.css";
 import "admin-lte/plugins/overlayScrollbars/css/OverlayScrollbars.min.css";
-import "admin-lte/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css";
-import "admin-lte/plugins/icheck-bootstrap/icheck-bootstrap.min.css";
 import "admin-lte/plugins/chart.js/Chart.min.js";
 import "admin-lte/plugins/moment/moment.min.js";
 import "admin-lte/plugins/jquery-ui/jquery-ui.min.js";

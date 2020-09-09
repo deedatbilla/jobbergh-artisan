@@ -7,7 +7,7 @@ import DashBoardHeader from '../../Components/Layouts/ArtisanDashboardLayouts/Da
 import DashboardContent from '../../Components/Layouts/ArtisanDashboardLayouts/DashboardContent';
 import DashboardSideBar from '../../Components/Layouts/ArtisanDashboardLayouts/DashboardSideBar';
 class Dashboard extends Component {
-  componentDidMount() {}
+  
   static getDerivedStateFromProps(props, state) {
     const { artisan, history } = props;
     if (artisan) {

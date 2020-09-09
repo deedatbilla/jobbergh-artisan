@@ -4,6 +4,8 @@ import Tag from "../Common/Tag";
 import { Modal, Button } from "react-bootstrap";
 // import test from "../../../images/1.jpeg";
 import DropzoneLayout from "../ArtisanDashboardLayouts/DropzoneLayout";
+import SampleWorksDropzone from "../ArtisanDashboardLayouts/SampleWorksDropzone";
+import { compose } from "redux";
 
 const images = [
   { id: 1, url: "../../../images/1.jpeg" },
@@ -20,46 +22,91 @@ class PortfolioContent extends Component {
     this.state = {
       skills: [],
       service: "",
-      showWorkModal: "",
+      showWorkPlaceModal: false,
+      showSampleWorkModal: false,
       workimages: [],
-      bio:""
+      samples: [],
+      bio: "",
+      loading: false,
+      file: "",
     };
   }
+  uploadProfilePic = (e) => {
+    e.preventDefault();
+    this.setState({ loading: true });
+    const { firebase, details } = this.props;
+    const user = firebase.auth().currentUser;
+    // console.log(details.file,"hgh")
+    // await firebase.deleteFile('index.txt')
+    firebase.uploadFile(`artisans/${user.uid}/profile`, this.state.file, `artisans/${user.uid}`).then((data) => {
+      // console.log("File uploaded successfully", data);
+      //uploadTaskSnaphot
 
+      user
+        .updateProfile({
+          photoURL: data.File.downloadURL,
+        })
+        .then((data) => {
+          // Update successful.
+          console.log("profile updated");
+          // this.setState({})
+          this.setState({ loading: false });
+        })
+        .catch((error) => {
+          // An error happened.
+          console.log("profile update error");
+          this.setState({ loading: false });
+        });
+    });
+  };
   onChange = (e) => this.setState({ [e.target.name]: e.target.value });
+  fetchWorkPlaceImages = () => {
+    const { artisan, firestore, firebase } = this.props;
+    const userid = firebase.auth().currentUser.uid;
+    firebase
+      .database()
+      .ref(`/artisan/${userid}/workplace`)
+      .once("value")
+      .then((snapshot) => {
+        snapshot.forEach((element) => {
+          // console.log(element.val());
+          const data = element.val();
+          this.setState({ workimages: this.state.workimages.concat(data) });
+        });
 
+        // ...
+      });
+  };
+  fetchSampleWOrks = () => {
+    const { artisan, firestore, firebase } = this.props;
+    const userid = firebase.auth().currentUser.uid;
+    firebase
+      .database()
+      .ref(`/artisan/${userid}/sample_works`)
+      .once("value")
+      .then((snapshot) => {
+        snapshot.forEach((element) => {
+          // console.log(element.val());
+          const data = element.val();
+          this.setState({ samples: this.state.samples.concat(data) });
+        });
+
+        // ...
+      });
+  };
   componentDidMount() {
     const { artisan, firestore, firebase } = this.props;
-    firebase
-      .storage()
-      .ref(`${firebase.auth().currentUser.uid}/workplace`)
-      .listAll()
-      .then((result) => {
-        result.items.forEach((imageRef) => {
-          // And finally display them
-          imageRef
-            .getDownloadURL()
-            .then((url) => {
-              // TODO: Display the image on the UI
-              console.log(url);
-              this.setState({ workimages: this.state.workimages.concat(url) });
-              //alert(url)
-            })
-            .catch(function (error) {
-              // Handle any errors
-            });
-        });
-      })
-      .catch(function (error) {
-        // Handle any errors
-      });
+    this.fetchWorkPlaceImages();
+    this.fetchSampleWOrks()
+    // console.log(firebase)
+    
 
     this.setState({
       skills: artisan.services,
     });
   }
   handleClose = () => {
-    this.setState({ showWorkModal: false });
+    this.setState({ showWorkPlaceModal: false, showSampleWorkModal: false });
   };
   onFilesDrop = (files) => {
     // return firebase.uploadFiles(filesPath, files, filesPath)
@@ -68,11 +115,11 @@ class PortfolioContent extends Component {
     // return firebase.deleteFile(file.fullPath, `${filesPath}/${key}`)
   };
   WorkplaceImagesModal = () => {
-    const { showWorkModal } = this.state;
+    const { showWorkPlaceModal } = this.state;
     return (
-      <Modal show={showWorkModal} onHide={this.handleClose}>
+      <Modal show={showWorkPlaceModal} onHide={this.handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Modal heading</Modal.Title>
+          <Modal.Title>Upload images of workplace</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <DropzoneLayout firebase={this.props.firebase} artisan={this.props.artisan} firestore={this.props.firestore} />
@@ -87,6 +134,31 @@ class PortfolioContent extends Component {
         </Modal.Footer>
       </Modal>
     );
+  };
+
+  SampleWorksModal = () => {
+    const { showSampleWorkModal } = this.state;
+    return (
+      <Modal show={showSampleWorkModal} onHide={this.handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Upload sample works</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <SampleWorksDropzone firebase={this.props.firebase} artisan={this.props.artisan} firestore={this.props.firestore} />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={this.handleClose}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={this.handleClose}>
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    );
+  };
+  onFileChange = (e) => {
+    this.setState({ file: e.target.files[0] });
   };
   onSubmitSkill = async (e) => {
     e.preventDefault();
@@ -105,11 +177,10 @@ class PortfolioContent extends Component {
     }
   };
 
-
   onSubmitBio = async (e) => {
     e.preventDefault();
-    const { bio} = this.state;
-   
+    const { bio } = this.state;
+
     const { firebase, firestore, artisan } = this.props;
     try {
       await firestore.update({ collection: "users", doc: firebase.auth().currentUser.uid }, { bio: bio });
@@ -120,10 +191,12 @@ class PortfolioContent extends Component {
     }
   };
   render() {
-    const { artisan } = this.props;
+    const { artisan, firebase } = this.props;
+    const user = firebase.auth().currentUser;
     return (
       <div className="content-wrapper">
         {this.WorkplaceImagesModal()}
+        {this.SampleWorksModal()}
         {/* <!-- Content Header (Page header) --> */}
         <div className="content-header">
           <div className="container-fluid">
@@ -147,6 +220,7 @@ class PortfolioContent extends Component {
           <div className="container-fluid">
             <div className="row">
               {/* <!-- Left col --> */}
+
               <section className="col-lg-8 col-md-8">
                 {/* <!-- Custom tabs (Charts with tabs)--> */}
                 <div className="card">
@@ -160,12 +234,52 @@ class PortfolioContent extends Component {
                   <div className="card-body">
                     <div className="container-fluid">
                       <div className="row mb-3">
-                        <div className="col-md-12">
+                        <form onSubmit={this.uploadProfilePic}>
+                          <div class="row">
+                            <div class="col-12 col-sm-auto mb-3">
+                              <div class="mx-auto" style={{ width: "140px" }}>
+                                {user.photoURL ? (
+                                  <img
+                                    class="profile-user-img  img-circle"
+                                    src={user.photoURL}
+                                    alt="User profile picture"
+                                    height={100}
+                                    width={100}
+                                  />
+                                ) : (
+                                  <img
+                                    class="profile-user-img img-fluid img-circle"
+                                    src={placeholder}
+                                    height={100}
+                                    width={100}
+                                    alt="placeholder"
+                                  />
+                                )}
+                              </div>
+                            </div>
+                            <div class="col d-flex flex-column flex-sm-row justify-content-between mb-3">
+                              <div class="text-center text-sm-left mb-2 mb-sm-0">
+                                {/* <h4 class="pt-sm-2 pb-1 mb-0 text-nowrap">{name}</h4> */}
+                                <div class=" mt-2">
+                                  <input type="file" name="file" required onChange={this.onFileChange} />
+                                </div>
+                                <div class="mt-2">
+                                  <button class="btn btn-primary text-white" type="submit">
+                                    <i class="fa fa-fw fa-camera"></i>
+                                    {!this.state.loading ? <span>Change Photo</span> : <span>Uploading...</span>}
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </form>
+
+                        {/* <div className="col-md-12">
                           <img src={placeholder} className="img-thumbnail" height={150} width={150} alt="profile" />
                           <button className="btn btn-warning m-2" style={{ position: "absolute", bottom: "0" }}>
                             Select profile picture
                           </button>
-                        </div>
+                        </div> */}
                       </div>
                       {/* Personal info start */}
                       <div className="row ">
@@ -224,45 +338,89 @@ class PortfolioContent extends Component {
                   </div>
                 </div>
               </section>
-              <section className="col-lg-4 col-md-4">
-                <div className="card">
-                  <div className="card-header">
-                    <h3 className="card-title">
-                      {/* <i className="fa fa-chart-pie mr-1"></i> */}
-                      Workshop photos
-                    </h3>
-                  </div>
-                  <div className="card-body">
-                    <div className="container-fluid">
-                      <div className="row">
-                        {this.state.workimages.map((data) => (
-                          <div className="col-md-3 mb-1 col-sm-6 col-xs-6 ">
-                            <img
-                              src={data}
-                              alt="shop"
-                              className="img-responsive"
-                              style={{ border: "2px solid #fafafa", height: "100px", width: "100px" }}
-                            />
-                          </div>
-                        ))}
+
+              <div className="col-lg-4 col-md-8">
+                <div className="row">
+                  <section className="col-lg-12 col-md-12">
+                    <div className="card">
+                      <div className="card-header">
+                        <h3 className="card-title">
+                          {/* <i className="fa fa-chart-pie mr-1"></i> */}
+                          Workshop photos
+                        </h3>
                       </div>
-                      <div className="row mt-2">
-                        <div className="col-md-12   ">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              this.setState({ showWorkModal: true });
-                            }}
-                            className="btn btn-warning float-right"
-                          >
-                            Upload images of workplace
-                          </button>
+                      <div className="card-body">
+                        <div className="container-fluid">
+                          <div className="row">
+                            {this.state.workimages.map((data) => (
+                              <div className="col-md-3 mb-1 col-sm-6 col-xs-6 ">
+                                <img
+                                  src={data.downloadURL}
+                                  alt="shop"
+                                  className="img-responsive"
+                                  style={{ border: "2px solid #fafafa", height: "100px", width: "100px" }}
+                                />
+                              </div>
+                            ))}
+                          </div>
+                          <div className="row mt-2">
+                            <div className="col-md-12   ">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  this.setState({ showWorkPlaceModal: true });
+                                }}
+                                className="btn btn-warning float-right"
+                              >
+                                Upload images of workplace
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </section>
+                  <section className="col-lg-12 col-md-12">
+                    <div className="card">
+                      <div className="card-header">
+                        <h3 className="card-title">
+                          {/* <i className="fa fa-chart-pie mr-1"></i> */}
+                          Sample works
+                        </h3>
+                      </div>
+                      <div className="card-body">
+                        <div className="container-fluid">
+                          <div className="row">
+                            {this.state.samples.map((data) => (
+                              <div className="col-md-3 mb-1 col-sm-6 col-xs-6 ">
+                                <img
+                                  src={data.downloadURL}
+                                  alt="shop"
+                                  className="img-responsive"
+                                  style={{ border: "2px solid #fafafa", height: "100px", width: "100px" }}
+                                />
+                              </div>
+                            ))}
+                          </div>
+                          <div className="row mt-2">
+                            <div className="col-md-12   ">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  this.setState({ showSampleWorkModal: true });
+                                }}
+                                className="btn btn-warning float-right"
+                              >
+                                Upload images of sample works
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
                 </div>
-              </section>
+              </div>
             </div>
 
             <div className="row">
@@ -375,9 +533,7 @@ class PortfolioContent extends Component {
                         </form>
                         <br />
                         <h3>My Bio</h3>
-                        <p>
-                          {artisan.bio}
-                        </p>
+                        <p>{artisan.bio}</p>
                       </div>
                     </div>
                   </div>
