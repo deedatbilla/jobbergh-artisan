@@ -84,7 +84,24 @@ class DashboardContent extends Component {
       sum += element.rating;
     });
     sum = sum / reviews.length;
-
+    let complete = 0;
+    requests.forEach(element => {
+     
+      if (element.status === "complete") {
+        complete++;
+      }
+      // console.log(count)
+      // return count;
+    })
+    let inprogress = 0;
+    requests.forEach(element => {
+     
+      if (element.status === "in-progress") {
+        inprogress++;
+      }
+      // console.log(count)
+      // return count;
+    })
       return (
         <div className="content-wrapper">
           {/* <!-- Content Header (Page header) --> */}
@@ -117,13 +134,7 @@ class DashboardContent extends Component {
                   <div className="small-box bg-info">
                     <div className="inner">
                       <h3>
-                        {requests.map((data) => {
-                          let count = 0;
-                          if (data.status === "complete") {
-                            count++;
-                          }
-                          return count||0;
-                        })}
+                        {complete}
                       </h3>
                       <p>Services completed</p>
                     </div>
@@ -153,13 +164,7 @@ class DashboardContent extends Component {
                   <div className="small-box bg-danger">
                     <div className="inner">
                       <h3>
-                        {requests.map((data) => {
-                          let count = 0;
-                          if (data.status === "approved") {
-                            count++;
-                          }
-                          return count;
-                        })}
+                        {inprogress}
                       </h3>
 
                       <p>Active service</p>
@@ -176,10 +181,10 @@ class DashboardContent extends Component {
                     <div className="inner">
                       <h3>{requests.length||0}</h3>
 
-                      <p>Total Customers</p>
+                      <p>Total Requests</p>
                     </div>
                     <div className="icon">
-                      <i className="ion ion-person-add"></i>
+                      <i className="fas fa-toolbox"></i>
                     </div>
                   </div>
                 </div>

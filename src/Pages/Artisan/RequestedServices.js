@@ -7,6 +7,8 @@ import DashboardSideBar from "../../Components/Layouts/ArtisanDashboardLayouts/D
 import DashBoardHeader from "../../Components/Layouts/ArtisanDashboardLayouts/DashBoardHeader";
 import PortfolioContent from "../../Components/Layouts/ArtisanDashboardLayouts/PortfolioContent";
 import Spinner from "../../Components/Layouts/Common/Spinner";
+import axios from "axios";
+import { JOBBERGH_BASE_URL } from "../../config";
 import { confirmAlert } from "react-confirm-alert"; // Import
 import "react-confirm-alert/src/react-confirm-alert.css"; // Import css
 class RequestedServices extends Component {
@@ -76,7 +78,7 @@ class RequestedServices extends Component {
                                   {this.props.requests.map((data) => (
                                     <tr key={data.id}>
                                       <td>{data.id}</td>
-                                      <td>{data.location}</td>
+                                      <td>{data.job_area}</td>
                                       <td>
                                         <span
                                           className={
@@ -84,8 +86,10 @@ class RequestedServices extends Component {
                                               ? "badge badge-warning"
                                               : data.status === "cancelled"
                                               ? "badge badge-danger"
-                                              : data.status === "approved"
+                                              : data.status === "in-progress"
                                               ? "badge badge-primary"
+                                              : data.status === "awaiting client comfirmation"
+                                              ? "badge badge-warning"
                                               : data.status === "complete"
                                               ? "badge badge-success"
                                               : null
@@ -94,8 +98,9 @@ class RequestedServices extends Component {
                                           {data.status}
                                         </span>
                                       </td>
-                                      <td>{data.type_of_skill}</td>
-                                      <td>{new Date(data.datecreated.seconds).toString()}</td>
+                                      <td>{data.skill}</td>
+                                      <td>{new Date(data.datecreated).toLocaleDateString()}</td>
+                                      {data.status === "pending" ? (
                                       <td>
                                         <span>
                                           <button
@@ -104,7 +109,7 @@ class RequestedServices extends Component {
                                               const { firestore } = this.props;
                                               confirmAlert({
                                                 title: "Approve request",
-                                                message: `You are about to approve request for a ${data.type_of_skill} service  .`,
+                                                message: `You are about to approve request for a ${data.skill} service  .`,
                                                 buttons: [
                                                   {
                                                     label: "Confirm",
@@ -112,7 +117,7 @@ class RequestedServices extends Component {
                                                       try {
                                                         await firestore.update(
                                                           { collection: "ArtisanRequests", doc: data.id },
-                                                          { status: "approved" }
+                                                          { status: "in-progress" }
                                                         );
                                                       } catch (error) {
                                                         console.log(error.message);
@@ -131,7 +136,8 @@ class RequestedServices extends Component {
                                             Approve
                                           </button>
                                         </span>
-                                      </td>
+                                      </td>):null}
+                                      {data.status === "in-progress" ||data.status === "pending" ? (
                                       <td>
                                         <span>
                                           <button
@@ -167,9 +173,9 @@ class RequestedServices extends Component {
                                             Cancel
                                           </button>
                                         </span>
-                                      </td>
+                                      </td>):null}
 
-                                      {data.status === "approved" ? (
+                                      {data.status === "in-progress" ? (
                                         <td>
                                           <span>
                                             <button
@@ -186,8 +192,18 @@ class RequestedServices extends Component {
                                                         try {
                                                           await firestore.update(
                                                             { collection: "ArtisanRequests", doc: data.id },
-                                                            { status: "complete" }
+                                                            { status: "awaiting client comfirmation" }
                                                           );
+                                                          const response = await axios.post(
+                                                            `${JOBBERGH_BASE_URL}/api/service-complete-comfirmation-alert`,
+                                                            {
+                                                              serviceId: data.id,
+                                                              artisanName: firebase.auth().currentUser.displayName,
+                                                              clientPhone: data.clientPhone.replace("+", ""),
+                                                              clientEmail: data.clientEmail,
+                                                            }
+                                                          );
+                                                          console.log(response.data);
                                                         } catch (error) {
                                                           console.log(error.message);
                                                         }
@@ -202,7 +218,7 @@ class RequestedServices extends Component {
                                                 //   await firestore.u
                                               }}
                                             >
-                                              Complete
+                                              Mark as complete
                                             </button>
                                           </span>
                                         </td>
@@ -212,7 +228,9 @@ class RequestedServices extends Component {
                                 </React.Fragment>
                               ) : (
                                 <tr>
-                                  <td colSpan="6" className="text-center">No items</td>
+                                  <td colSpan="6" className="text-center">
+                                    No items
+                                  </td>
                                 </tr>
                               )}
                               {/* <tr>

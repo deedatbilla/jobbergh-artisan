@@ -435,11 +435,11 @@ class PortfolioContent extends Component {
                           Skills & services
                         </a>
                       </li>
-                      <li class="nav-item">
+                      {/* <li class="nav-item">
                         <a class="nav-link" data-toggle="pill" href="#work-experience">
                           Work Experience
                         </a>
-                      </li>
+                      </li> */}
                       <li class="nav-item">
                         <a class="nav-link" data-toggle="pill" href="#bio">
                           Bio
@@ -482,7 +482,7 @@ class PortfolioContent extends Component {
                           </div>
                         </div>
                       </div>
-                      <div id="work-experience" class="container tab-pane fade">
+                      {/* <div id="work-experience" class="container tab-pane fade">
                         <br />
                         <div className="container-fluid">
                           <form onSubmit={this.onSubmitSkill}>
@@ -515,6 +515,7 @@ class PortfolioContent extends Component {
                           </div>
                         </div>
                       </div>
+                     */}
                       <div id="bio" class="container tab-pane fade">
                         <form onSubmit={this.onSubmitBio}>
                           <div className="row">
