@@ -58,7 +58,7 @@ class DashboardSideBar extends Component {
           {/* <!-- Sidebar user panel (optional) --> */}
           <div className="user-panel mt-3 pb-3 mb-3 d-flex">
             <div className="image">
-              <img src={logo} width={90} height={90} className="img-circle elevation-2" alt="User Image" /> 
+              <img src={auth.photoURL} width={100} height={100} className="img-circle  profile-user-img" alt="User Image" /> 
                {/* <i className="nav-icon fa fa-user img-circle elevation-2" width={90} height={90} ></i> */}
             </div>
             <div className="info">

@@ -31,34 +31,7 @@ class PortfolioContent extends Component {
       file: "",
     };
   }
-  uploadProfilePic = (e) => {
-    e.preventDefault();
-    this.setState({ loading: true });
-    const { firebase, details } = this.props;
-    const user = firebase.auth().currentUser;
-    // console.log(details.file,"hgh")
-    // await firebase.deleteFile('index.txt')
-    firebase.uploadFile(`artisans/${user.uid}/profile`, this.state.file, `artisans/${user.uid}`).then((data) => {
-      // console.log("File uploaded successfully", data);
-      //uploadTaskSnaphot
-
-      user
-        .updateProfile({
-          photoURL: data.File.downloadURL,
-        })
-        .then((data) => {
-          // Update successful.
-          console.log("profile updated");
-          // this.setState({})
-          this.setState({ loading: false });
-        })
-        .catch((error) => {
-          // An error happened.
-          console.log("profile update error");
-          this.setState({ loading: false });
-        });
-    });
-  };
+ 
   onChange = (e) => this.setState({ [e.target.name]: e.target.value });
   fetchWorkPlaceImages = () => {
     const { artisan, firestore, firebase } = this.props;
@@ -234,7 +207,7 @@ class PortfolioContent extends Component {
                   <div className="card-body">
                     <div className="container-fluid">
                       <div className="row mb-3">
-                        <form onSubmit={this.uploadProfilePic}>
+                       
                           <div class="row">
                             <div class="col-12 col-sm-auto mb-3">
                               <div class="mx-auto" style={{ width: "140px" }}>
@@ -257,22 +230,9 @@ class PortfolioContent extends Component {
                                 )}
                               </div>
                             </div>
-                            <div class="col d-flex flex-column flex-sm-row justify-content-between mb-3">
-                              <div class="text-center text-sm-left mb-2 mb-sm-0">
-                                {/* <h4 class="pt-sm-2 pb-1 mb-0 text-nowrap">{name}</h4> */}
-                                <div class=" mt-2">
-                                  <input type="file" name="file" required onChange={this.onFileChange} />
-                                </div>
-                                <div class="mt-2">
-                                  <button class="btn btn-primary text-white" type="submit">
-                                    <i class="fa fa-fw fa-camera"></i>
-                                    {!this.state.loading ? <span>Change Photo</span> : <span>Uploading...</span>}
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </form>
+                           
+                          
+                        </div>
 
                         {/* <div className="col-md-12">
                           <img src={placeholder} className="img-thumbnail" height={150} width={150} alt="profile" />

@@ -7,6 +7,8 @@ import Portfolio from './Portfolio';
 import { UserIsAuthenticated, UserIsNotAuthenticated } from "../../helpers/ArtisanAuthHelper";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import RequestedServices from './RequestedServices';
+import NotFound from '../NotFound';
+import ProfilePage from './ProfilePage';
 import NotAuthorizedPage from './NotAuthorizedPage'
 class ArtisanRootComponent extends Component {
   render() {
@@ -21,6 +23,8 @@ class ArtisanRootComponent extends Component {
             <Route exact path="/portfolio" component={UserIsAuthenticated(Portfolio)} />
             <Route exact path="/requested-services" component={UserIsAuthenticated(RequestedServices)} />
             <Route exact path="/not-authorized" component={NotAuthorizedPage} />
+            <Route exact path="/edit-profile" component={UserIsAuthenticated(ProfilePage)} />
+            <Route exact path="" component={NotFound} />
           </Switch>
         </Router>
       </div>

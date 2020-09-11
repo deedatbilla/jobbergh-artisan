@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Sector, Cell } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend, Tooltip, PieChart, Pie, Sector, Cell } from "recharts";
 import PropTypes from "prop-types";
 import { compose } from "redux";
 import { connect } from "react-redux";
@@ -7,50 +7,7 @@ import { firestoreConnect } from "react-redux-firebase";
 import { firebaseConnect } from "react-redux-firebase";
 import Spinner from "../Common/Spinner";
 
-const data = [
-  {
-    name: "Page A",
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
-  },
-  {
-    name: "Page B",
-    uv: 3000,
-    pv: 1398,
-    amt: 2210,
-  },
-  {
-    name: "Page C",
-    uv: 2000,
-    pv: 9800,
-    amt: 2290,
-  },
-  {
-    name: "Page D",
-    uv: 2780,
-    pv: 3908,
-    amt: 2000,
-  },
-  {
-    name: "Page E",
-    uv: 1890,
-    pv: 4800,
-    amt: 2181,
-  },
-  {
-    name: "Page F",
-    uv: 2390,
-    pv: 3800,
-    amt: 2500,
-  },
-  {
-    name: "Page G",
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-];
+
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
@@ -68,6 +25,7 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
 };
 
 class DashboardContent extends Component {
+  static jsfiddleUrl = "https://jsfiddle.net/alidingling/c9pL8k61/";
   state = { total: 0 };
 
   componentDidMount() {
@@ -76,32 +34,49 @@ class DashboardContent extends Component {
     }
   }
   render() {
-    const { requests,reviews } = this.props;
-    if (requests&&reviews) {
+    const { requests, reviews } = this.props;
+    if (requests && reviews) {
       //  console.log(Piedata);
       let sum = 0;
-    reviews.forEach((element) => {
-      sum += element.rating;
-    });
-    sum = sum / reviews.length;
-    let complete = 0;
-    requests.forEach(element => {
-     
-      if (element.status === "complete") {
-        complete++;
-      }
-      // console.log(count)
-      // return count;
-    })
-    let inprogress = 0;
-    requests.forEach(element => {
-     
-      if (element.status === "in-progress") {
-        inprogress++;
-      }
-      // console.log(count)
-      // return count;
-    })
+      reviews.forEach((element) => {
+        sum += element.rating;
+      });
+      sum = sum / reviews.length;
+      let complete = 0;
+      requests.forEach((element) => {
+        if (element.status === "complete") {
+          complete++;
+        }
+        // console.log(count)
+        // return count;
+      });
+      let inprogress = 0;
+      requests.forEach((element) => {
+        if (element.status === "in-progress") {
+          inprogress++;
+        }
+        // console.log(count)
+        // return count;
+      });
+      let pending = 0;
+      requests.forEach((element) => {
+        if (element.status === "pending") {
+          pending++;
+        }
+        // console.log(count)
+        // return count;
+      });
+
+      let piedata = [
+        { name: "Complete", value: complete },
+        { name: "In-progress", value: inprogress },
+        { name: "Pending", value: pending },
+      ];
+      const data = [
+        { name: "Complete", total: complete },
+        { name: "In-progress", total: inprogress },
+        { name: "Pending", total: pending },
+      ];
       return (
         <div className="content-wrapper">
           {/* <!-- Content Header (Page header) --> */}
@@ -133,9 +108,7 @@ class DashboardContent extends Component {
                   {/* <!-- small box --> */}
                   <div className="small-box bg-info">
                     <div className="inner">
-                      <h3>
-                        {complete}
-                      </h3>
+                      <h3>{complete}</h3>
                       <p>Services completed</p>
                     </div>
                     <div className="icon">
@@ -148,7 +121,7 @@ class DashboardContent extends Component {
                   {/* <!-- small box --> */}
                   <div className="small-box bg-success">
                     <div className="inner">
-                      <h3>{sum||0}/5</h3>
+                      <h3>{sum || 0}/5</h3>
 
                       <p>Overall rating</p>
                     </div>
@@ -163,9 +136,7 @@ class DashboardContent extends Component {
                   {/* <!-- small box --> */}
                   <div className="small-box bg-danger">
                     <div className="inner">
-                      <h3>
-                        {inprogress}
-                      </h3>
+                      <h3>{inprogress}</h3>
 
                       <p>Active service</p>
                     </div>
@@ -179,7 +150,7 @@ class DashboardContent extends Component {
                   {/* <!-- small box --> */}
                   <div className="small-box bg-warning">
                     <div className="inner">
-                      <h3>{requests.length||0}</h3>
+                      <h3>{requests.length || 0}</h3>
 
                       <p>Total Requests</p>
                     </div>
@@ -198,47 +169,38 @@ class DashboardContent extends Component {
                   <div className="card">
                     <div className="card-header">
                       <h3 className="card-title">
-                        <i className="fa fa-chart-pie mr-1"></i>
-                        Services
+                        <i className="fa fa-chart-bar mr-1"></i>
+                        Bar
                       </h3>
                       <div className="card-tools"></div>
                     </div>
                     <div className="card-body">
-                      <div className="tab-content p-0">
-                        {/* <!-- Morris chart - Sales --> */}
-                        <div
-                          className="chart tab-pane active"
-                          id="revenue-chart"
-                          style={{ position: "relative", height: "300px" }}
-                        >
-                          {/* <canvas id="revenue-chart-canvas" height="300" style={{ height: "300px" }}></canvas> */}
-                          {/* <AreaChart
-                            id="revenue-chart-canvas"
-                            width={800}
-                            height={400}
-                            data={data}
-                            margin={{
-                              top: 10,
-                              right: 30,
-                              left: 0,
-                              bottom: 0,
-                            }}
-                          >
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <Tooltip />
-                            <Area type="monotone" dataKey="uv" stackId="1" stroke="#8884d8" fill="#8884d8" />
-                            <Area type="monotone" dataKey="pv" stackId="1" stroke="#82ca9d" fill="#82ca9d" />
-                            <Area type="monotone" dataKey="amt" stackId="1" stroke="#ffc658" fill="#ffc658" />
-                          </AreaChart> */}
-                        </div>
-                        <div className="chart tab-pane" id="sales-chart" style={{ position: "relative", height: "300px" }}>
-                          <canvas id="sales-chart-canvas" height="300" style={{ height: "300px" }}></canvas>
-                        </div>
-                      </div>
+                      {/* <canvas id="revenue-chart-canvas" height="300" style={{ height: "300px" }}></canvas> */}
+                      <BarChart
+                        width={700}
+                        height={400}
+                        data={data}
+                        margin={{
+                          top: 5,
+                          right: 30,
+                          left: 20,
+                          bottom: 5,
+                        }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="total" fill="#8884d8" />
+                        {/* <Bar dataKey="uv" fill="#82ca9d" /> */}
+                      </BarChart>
                     </div>
+                    {/* <div className="chart tab-pane" id="sales-chart" style={{ position: "relative", height: "300px" }}>
+                          <canvas id="sales-chart-canvas" height="300" style={{ height: "300px" }}></canvas>
+                        </div> */}
                   </div>
+
                   {/* <!-- /.card --> */}
                 </section>
                 <section className="col-lg-4 connectedSortable">
@@ -247,42 +209,33 @@ class DashboardContent extends Component {
                     <div className="card-header">
                       <h3 className="card-title">
                         <i className="fa fa-chart-pie mr-1"></i>
-                        Total
+                        Pie
                       </h3>
                       <div className="card-tools"></div>
                     </div>
                     <div className="card-body">
-                      <div className="tab-content p-0">
-                        {/* <!-- Morris chart - Sales --> */}
-                        <div
-                          className="chart tab-pane active"
-                          id="revenue-chart"
-                          style={{ position: "relative", height: "300px" }}
-                        >
+                      <div className="row">
+                        <div className="col-12">
                           {/* <canvas id="revenue-chart-canvas" height="300" style={{ height: "300px" }}></canvas> */}
-                          {/* <PieChart width={600} height={600}>
+                          <PieChart width={400} height={400}>
                             <Pie
-                              data={Piedata}
-                              cx={200}
-                              cy={200}
-                              labelLine={false}
-                              label={renderCustomizedLabel}
-                              outerRadius={80}
-                              fill="#8884d8"
                               dataKey="value"
-                            >
-                              {data.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                              ))}
-                            </Pie>
-                          </PieChart> */}
-                        </div>
-                        <div className="chart tab-pane" id="sales-chart" style={{ position: "relative", height: "300px" }}>
-                          <canvas id="sales-chart-canvas" height="300" style={{ height: "300px" }}></canvas>
+                              isAnimationActive={false}
+                              data={piedata}
+                              cx={140}
+                              cy={150}
+                              outerRadius={100}
+                              fill="#8884d8"
+                              label
+                            />
+                            {/* <Pie dataKey="value" data={data02} cx={500} cy={200} innerRadius={40} outerRadius={80} fill="#82ca9d" /> */}
+                            <Tooltip />
+                          </PieChart>
                         </div>
                       </div>
                     </div>
                   </div>
+
                   {/* <!-- /.card --> */}
                 </section>
 

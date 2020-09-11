@@ -88,7 +88,7 @@ class RequestedServices extends Component {
                                               ? "badge badge-danger"
                                               : data.status === "in-progress"
                                               ? "badge badge-primary"
-                                              : data.status === "awaiting client comfirmation"
+                                              : data.status === "awaiting client confirmation"
                                               ? "badge badge-warning"
                                               : data.status === "complete"
                                               ? "badge badge-success"
@@ -192,10 +192,10 @@ class RequestedServices extends Component {
                                                         try {
                                                           await firestore.update(
                                                             { collection: "ArtisanRequests", doc: data.id },
-                                                            { status: "awaiting client comfirmation" }
+                                                            { status: "awaiting client confirmation" }
                                                           );
                                                           const response = await axios.post(
-                                                            `${JOBBERGH_BASE_URL}/api/service-complete-comfirmation-alert`,
+                                                            `${JOBBERGH_BASE_URL}/api/service-complete-confirmation-alert`,
                                                             {
                                                               serviceId: data.id,
                                                               artisanName: firebase.auth().currentUser.displayName,

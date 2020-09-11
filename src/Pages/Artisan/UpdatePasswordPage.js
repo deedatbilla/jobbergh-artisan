@@ -6,15 +6,15 @@ import { firebaseConnect, firestoreConnect } from "react-redux-firebase";
 class UpdatePasswordPage extends Component {
   state = {
     newPassword: "",
-    comfirm: "",
+    confirm: "",
     loading: false,
   };
   onSubmit = async (e) => {
     e.preventDefault();
     this.setState({ loading: true });
-    const { newPassword, comfirm } = this.state;
+    const { newPassword, confirm } = this.state;
     const { firebase, history, firestore, artisan } = this.props;
-    if (newPassword === comfirm) {
+    if (newPassword === confirm) {
       var user = firebase.auth().currentUser;
 
       user
@@ -43,7 +43,7 @@ class UpdatePasswordPage extends Component {
     this.props.firebase.logout()
   }
   render() {
-    const { newPassword, comfirm } = this.state;
+    const { newPassword, confirm } = this.state;
     return (
       <div>
         <header>
@@ -80,10 +80,10 @@ class UpdatePasswordPage extends Component {
                 <input
                   type="password"
                   onChange={this.onChange}
-                  value={comfirm}
-                  name="comfirm"
+                  value={confirm}
+                  name="confirm"
                   class="form-control"
-                  placeholder="Comfirm new password"
+                  placeholder="confirm new password"
                 />
               </div>
 
